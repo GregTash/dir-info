@@ -1,3 +1,7 @@
+//TODO: Make program be able to read files without a file extension (E.G. '.c')
+//TODO: Make program be able to read every single file in a folder.
+//TODO: Make ability to toggle on and off recursiveness.
+
 #include <dirent.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -10,6 +14,8 @@
 char location[DIR_MAX_LENGTH];
 char* fType = NULL;
 
+unsigned long charCount = 0;
+unsigned long wordCount = 0;
 unsigned long lineCount = 0;
 
 int analyseDir(char* location, bool recursive) {
@@ -25,6 +31,7 @@ int analyseDir(char* location, bool recursive) {
 		int len = strlen(ent->d_name);
 		char* fileEnd = &ent->d_name[len - strlen(fType)];
 		
+		//Create a string the represents the file/directory path
 		char* fileToOpen = malloc(strlen(location) + strlen(ent->d_name) + 2);
 		strcpy(fileToOpen, location);
 		strcat(fileToOpen, "/");
@@ -53,7 +60,14 @@ int analyseDir(char* location, bool recursive) {
 			while (!feof(file)) {
 				int c = fgetc(file);
 
+				charCount++;
 				if (c == '\n') lineCount++;
+
+				if (c == '\n' ||
+					c == '\t' ||
+					c == ' ') {
+					wordCount++;	
+				}
 			}
 
 			fclose(file);
@@ -94,7 +108,6 @@ int main(int argc, char* argv[]) {
 		strcpy(location, argv[1]); 
 	}
 
-
 	fType = argv[argc-1];
 
 	//Analyse the directory
@@ -103,6 +116,8 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	printf("Characters: %lu\n", charCount);
+	printf("Words: %lu\n", wordCount);
 	printf("Lines: %lu\n", lineCount);
 
 	return 0;
