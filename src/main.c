@@ -108,10 +108,39 @@ int main(int argc, char* argv[]) {
 		strcpy(location, argv[1]); 
 	}
 
-	fType = argv[argc-1];
+	bool isRecursive = false;
+
+	//Check for arguments
+	int offset = 1;
+	while (true) {
+		if (argv[argc-offset][0] == '-') {
+			char* args = &argv[argc-offset][1];
+
+			for (int i = 0; args[i] != '\0'; i++) {
+				switch (args[i]) {
+					case 'r':
+						isRecursive = true;
+						break;
+
+					default:
+						printf("No argument exists for: %c\n", args[i]);
+						break;
+				}
+			}
+
+			offset++;
+		}
+		else break;
+	}
+
+	fType = argv[argc-offset];
+
+	if (!strcmp(argv[argc-1], "-r")) {
+		isRecursive = true;
+	}
 
 	//Analyse the directory
-	if (!analyseDir(location, true)) {
+	if (!analyseDir(location, isRecursive)) {
 		printf("Analysing directory failed!\n");
 		return 1;
 	}
